@@ -9,13 +9,6 @@ var ride = [
          brownie: 1
       }
    },
-   // {
-   //    time: [700, 730],
-   //    item: {
-   //       apple: 2,
-   //       brownie: 1
-   //    }
-   // },
    {
       time: [new Date('2018-01-28 07:10'), new Date('2018-01-28 08:00')],
       item: {
@@ -34,6 +27,10 @@ var ride = [
    }
 ];
 
+class ItemCounter {
+
+}
+
 function process_ride(ride) {
    var sortedEvents = [];
    var i, tmp;
@@ -44,7 +41,6 @@ function process_ride(ride) {
          item: ride[i].item
       });
       sortedEvents.push(tmp);
-
       tmp = clone({
          se: false,
          time: ride[i].time[1],
@@ -52,92 +48,68 @@ function process_ride(ride) {
       });
       sortedEvents.push(tmp);
    }
+   sortedEvents = sortedEvents.sort(function (x,y) {
+      if (x.time > y.time) return 1;
+      else if (x.time === y.time && x.se === false && y.se === true) return 1;
+      else return -1;
+   });
    return sortedEvents;
 }
 
-sortedEvents = process_ride(ride)
-   .sort(function (x,y) {
-   if (x.time > y.time) return 1;
-   else if (x.time === y.time && x.se === false && y.se === true) return 1;
-   else return -1;
-});
+function mergeEvents (sortedEvents) {
+  for (let i=0; i<sortedEvents.length; i++) {
+     for (let j=i+1; j<sortedEvents.length; j++) {
+        if ((sortedEvents[i].time === sortedEvents[j].time) && (sortedEvents[i].se === sortedEvents[j].se)) {
+           console.log(sortedEvents[i], sortedEvents[j]);
+           sortedEvents[i] = counter(sortedEvents[i], sortedEvents[j], true);
+           console.log("merged");
+           sortedEvents.splice(j, 1);
+           j--;
+           console.log(sortedEvents[i], sortedEvents[j]);
+        }
+        else break;
+     }
+  }
+  return sortedEvents;
+}
 
-var SELen = sortedEvents.length;
-for (let i=0; i<sortedEvents.length; i++) {
-   // merge same-time events
-   for (let j=i+1; j<sortedEvents.length; j++) {
-      if ((sortedEvents[i].time === sortedEvents[j].time) && (sortedEvents[i].se === sortedEvents[j].se)) {
-         console.log(sortedEvents[i], sortedEvents[j]);
-         sortedEvents[i] = merge(sortedEvents[i], sortedEvents[j], true);
-         console.log("merged");
-         sortedEvents.splice(j, 1);
-         j--;
-         console.log(sortedEvents[i], sortedEvents[j]);
-         // console.log(sortedEvents[i], sortedEvents[j]);
+function counter (i, j, addOrDelete, property) {
+  if (Object.keys(i).length === 0) return j;
+  for (let key in j[property]) {
+    i[property][key] = (addOrDelete)? (i[property][key] || 0)+j[property][key] : (i[property][key] || 0)-j[property][key];
+  }
+  return clone(i);
+}
+
+function accumulateItem(sortedEvents) {
+  var accumulated = [];
+  var curSum = {};
+  for (let i=0; i<sortedEvents.length; i++) {
+     console.log("before", curSum);
+     curSum.item = clone(counter(curSum, sortedEvents[i], sortedEvents[i]["se"], "item")).item;
+     curSum.time = sortedEvents[i].time;
+     console.log("each", curSum);
+     accumulated.push(clone(curSum));
+  }
+  return accumulated;
+}
+
+
+
+function print_items(result) {
+  for (let i=1; i<result.length; i++) {
+      for (let key in result[i-1].item) {
+        if (result[i-1].item[key] === 0) delete result[i-1].item[key];
       }
-      else break;
-   }
-   // sortedEvents.splice(i+1, j-i-1);
-   // console.log("??");
-}
-console.log(sortedEvents);
-
-var result = [];
-var curSum = {};
-for (let i=0; i<sortedEvents.length; i++) {
-   console.log("before", curSum);
-   curSum.item = deepClone(merge(curSum, sortedEvents[i], sortedEvents[i]["se"])).item;
-   curSum.time = sortedEvents[i].time;
-   console.log("each", curSum);
-   result.push(deepClone(curSum));
-}
-console.log("\n", result);
-
-for (let i=1; i<result.length; i++) {
-    for (let key in result[i-1].item) {
-      if (result[i-1].item[key] === 0) delete result[i-1].item[key];
-    }
-    console.log(moment(result[i-1].time).format('h:mm'), moment(result[i].time).format('h:mm'), result[i-1].item);
+      console.log(moment(result[i-1].time).format('h:mm'), moment(result[i].time).format('h:mm'), result[i-1].item);
+  }
 }
 
-// console.log(moment(Date.now()).format('h:mm'));
-// result[i-1].time.format('MMMM Do YYYY, h:mm');
-// console.log(sortedEvents);
-// console.log(
-//    sortedEvents[0].item===sortedEvents[1].item,
-//    sortedEvents[0].item===sortedEvents[2].item,
-//    sortedEvents[0].item===sortedEvents[3].item
-//    // sortedEvents[0]===sortedEvents[1]
-// );
+// merge events at the same time
+function print_items_per_interval() {
 
-
-function merge (i, j, addOrDelete) {
-   // console.log("i", i, "j", j);
-   if (Object.keys(i).length === 0) return j;
-   for (let key in j["item"]) {
-         if (addOrDelete) {
-            if (i["item"].hasOwnProperty(key)) {
-               i["item"][key] = (i["item"][key] || 0) + j["item"][key];
-            }
-            else {
-               i["item"][key] = 0;
-               i["item"][key] = j["item"][key];
-            }
-
-         }
-         else {
-            i["item"][key] = (i["item"][key] || 0) - j["item"][key];
-         }
-         console.log(i["item"][key]);
-      // }
-   }
-   console.log("i", i, "j", j);
-   return deepClone(i);
-   // console.log(i);
 }
-
-
-// print_items_per_interval(sortedEvents) {
-
-
-// }2
+var sortedEvents = process_ride(ride);
+sortedEvents = mergeEvents(sortedEvents);
+var accumulated = accumulateItem(sortedEvents);
+print_items(accumulated);
