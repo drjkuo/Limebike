@@ -1,7 +1,9 @@
+var moment = require('moment');
+var clone = require('clone');
 
 var ride = [
    {
-      time: [700, 730],
+      time: [new Date('2018-01-28 07:00'), new Date('2018-01-28 07:30')],
       item: {
          apple: 2,
          brownie: 1
@@ -15,7 +17,7 @@ var ride = [
    //    }
    // },
    {
-      time: [710, 800],
+      time: [new Date('2018-01-28 07:10'), new Date('2018-01-28 08:00')],
       item: {
          apple: 1,
          carrot: 3
@@ -23,7 +25,7 @@ var ride = [
    },
 
    {
-      time: [720, 745],
+      time: [new Date('2018-01-28 07:20'), new Date('2018-01-28 07:45')],
       item: {
          apple: 1,
          brownie: 2,
@@ -32,47 +34,34 @@ var ride = [
    }
 ];
 
-
-function deepClone(obj) {
-   return JSON.parse(JSON.stringify(obj));
-}
-
 function process_ride(ride) {
    var sortedEvents = [];
-   var i, j, tmp;
+   var i, tmp;
    for (i=0; i<ride.length; i++) {
-      tmp = deepClone({
+      tmp = clone({
          se: true,
          time: ride[i].time[0],
-         // item: new Object(ride[i].item)
          item: ride[i].item
-         // item: deepClone(ride[i].item)
-
       });
       sortedEvents.push(tmp);
-      // tmp = {};
-      tmp = deepClone({
+
+      tmp = clone({
          se: false,
          time: ride[i].time[1],
          item: ride[i].item
-         // item: deepClone(ride[i].item)
       });
       sortedEvents.push(tmp);
-      // tmp = {};
    }
    return sortedEvents;
 }
 
-// console.log(process_ride(ride));
 sortedEvents = process_ride(ride)
    .sort(function (x,y) {
    if (x.time > y.time) return 1;
    else if (x.time === y.time && x.se === false && y.se === true) return 1;
    else return -1;
 });
-// console.log(sortedEvents);
 
-// var i, j;
 var SELen = sortedEvents.length;
 for (let i=0; i<sortedEvents.length; i++) {
    // merge same-time events
@@ -95,7 +84,7 @@ console.log(sortedEvents);
 
 var result = [];
 var curSum = {};
-for (let i=0; i<SELen; i++) {
+for (let i=0; i<sortedEvents.length; i++) {
    console.log("before", curSum);
    curSum.item = deepClone(merge(curSum, sortedEvents[i], sortedEvents[i]["se"])).item;
    curSum.time = sortedEvents[i].time;
@@ -108,9 +97,11 @@ for (let i=1; i<result.length; i++) {
     for (let key in result[i-1].item) {
       if (result[i-1].item[key] === 0) delete result[i-1].item[key];
     }
-    console.log(result[i-1].time, result[i].time, result[i-1].item);
+    console.log(moment(result[i-1].time).format('h:mm'), moment(result[i].time).format('h:mm'), result[i-1].item);
 }
 
+// console.log(moment(Date.now()).format('h:mm'));
+// result[i-1].time.format('MMMM Do YYYY, h:mm');
 // console.log(sortedEvents);
 // console.log(
 //    sortedEvents[0].item===sortedEvents[1].item,
@@ -144,6 +135,8 @@ function merge (i, j, addOrDelete) {
    return deepClone(i);
    // console.log(i);
 }
+
+
 // print_items_per_interval(sortedEvents) {
 
 
