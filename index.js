@@ -18,7 +18,7 @@ var ride = [
       time: [710, 800],
       item: {
          apple: 1,
-         carrots: 3
+         carrot: 3
       }
    },
 
@@ -93,16 +93,23 @@ for (let i=0; i<sortedEvents.length; i++) {
 }
 console.log(sortedEvents);
 
-// var result = [];
-// var curSum = {};
-// for (let i=0; i<SELen; i++) {
-//    console.log("before", curSum);
-//    curSum.item = deepClone(merge(curSum, sortedEvents[i], sortedEvents[i]["se"])).item;
-//    curSum.time = sortedEvents[i].time;
-//    console.log("each", curSum);
-//    result.push(deepClone(curSum));
-// }
-// console.log("result!!", result);
+var result = [];
+var curSum = {};
+for (let i=0; i<SELen; i++) {
+   console.log("before", curSum);
+   curSum.item = deepClone(merge(curSum, sortedEvents[i], sortedEvents[i]["se"])).item;
+   curSum.time = sortedEvents[i].time;
+   console.log("each", curSum);
+   result.push(deepClone(curSum));
+}
+console.log("\n", result);
+
+for (let i=1; i<result.length; i++) {
+    for (let key in result[i-1].item) {
+      if (result[i-1].item[key] === 0) delete result[i-1].item[key];
+    }
+    console.log(result[i-1].time, result[i].time, result[i-1].item);
+}
 
 // console.log(sortedEvents);
 // console.log(
