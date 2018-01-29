@@ -1,7 +1,7 @@
 var assert = require('assert');
 var ItemCounter = require('../ItemCounter');
 
-describe('Array', function() {
+describe('Ride', function() {
   var ic;
   var ride = [
      {
