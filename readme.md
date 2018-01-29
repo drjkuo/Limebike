@@ -1,3 +1,22 @@
+# LimeBike -- Bike Basket
+
+## Install
+
+1. Install prerequisites:
+
+   * [NPM](https://www.npmjs.com/)
+   * [Node](https://nodejs.org/en/)
+
+2. Install this repo:
+
+    `npm install`
+
+## Demo
+
+run `node index.js`
+
+```javascript
+
 var ItemCounter = require('./ItemCounter');
 
 var ride = [
@@ -29,3 +48,8 @@ var ride = [
 var ic = new ItemCounter();
 ic.process_ride(ride);
 ic.print_items_per_interval();
+```
+
+## Testing
+
+run `mocha`

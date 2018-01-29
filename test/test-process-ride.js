@@ -1,7 +1,8 @@
 var assert = require('assert');
-var ItemCounter = require('../index');
+var ItemCounter = require('../ItemCounter');
+
 describe('Array', function() {
-  let ic;
+  var ic;
   var ride = [
      {
         time: [new Date('2018-01-28 07:00'), new Date('2018-01-28 07:30')],
@@ -28,23 +29,21 @@ describe('Array', function() {
      }
   ];
   before(function() {
-    // runs before all tests in this block
     ic = new ItemCounter();
   });
 
 
   describe('process_ride()', function() {
-    it('should return double of ride.length', function() {
+    it('ic.get_process_ride()[0]["item"] should equal to item0', function() {
       ic.process_ride(ride);
-      console.log(ic._ride);
-      assert.equal(ic.process_ride(ride).length, ride.length*2);
+      console.log(ic.get_process_ride());
+      assert.equal(JSON.stringify(ic.get_process_ride()[0]["item"]), JSON.stringify({apple: 2, brownie: 1}));
     });
   });
   describe('print_items_per_interval()', function() {
     it('should print items per interval', function() {
       ic.process_ride(ride);
       ic.print_items_per_interval();
-      // console.log(ic.print_items_per_interval());
       assert.equal(ic.get_items_per_interval()[0], "07:00-7:10 -> 2 apples, 1 brownie");
       assert.equal(ic.get_items_per_interval()[1], "07:10-7:20 -> 3 apples, 1 brownie, 3 carrots");
       assert.equal(ic.get_items_per_interval()[2], "07:20-7:30 -> 4 apples, 3 brownies, 3 carrots, 4 diamonds");
