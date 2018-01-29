@@ -2,28 +2,22 @@ var moment = require('moment');
 var clone = require('clone');
 
 module.exports = class ItemCounter {
-
+  // constructor
   constructor() {
     this._ride = [];
     this._output = [];
   }
 
+  // getter
   get_items_per_interval() {
     return this._output;
   }
-
   get_process_ride() {
     return this._ride;
   }
 
-  counter (i, j, addOrDelete, property) {
-    if (Object.keys(i).length === 0) return j;
-    for (let key in j[property]) {
-      i[property][key] = (addOrDelete)? (i[property][key] || 0)+j[property][key] : (i[property][key] || 0)-j[property][key];
-    }
-    return clone(i);
-  }
-
+  // split ride into two events (one start event where se is true; one end event where se is false). Each event has the following properties: se(start/end), time, and item.  Then, sort the processed events by time and store it in this._ride
+  // @param ride: rides to be processed
   process_ride(ride) {
      var sortedEvents = [], i, tmp;
      for (i=0; i<ride.length; i++) {
@@ -46,21 +40,32 @@ module.exports = class ItemCounter {
         else return -1;
      });
      this._ride = sortedEvents;
-     // console.log(this._ride);
      return;
   }
 
+  // mergeEvents helper function that merge item property in two sortedEvents i, j into one
+  // @param i: one sortedEvent
+  // @param j: the other sortedEvent
+  // @param addOrDelete: flag to determine to add item or delete item
+  // @param property: property(value) to be merged
+  // @returns clone(i): merged sortedEvent
+  counter (i, j, addOrDelete, property) {
+    if (Object.keys(i).length === 0) return j;
+    for (var key in j[property]) {
+      i[property][key] = (addOrDelete)? (i[property][key]||0)+j[property][key] : (i[property][key]||0)-j[property][key];
+    }
+    return clone(i);
+  }
+
+  // merge duplicate events that include the same time and se property, for example, two start event at the same time, and three end events at the same time
   mergeEvents() {
     var sortedEvents = this._ride;
-    for (let i=0; i<sortedEvents.length; i++) {
-       for (let j=i+1; j<sortedEvents.length; j++) {
+    for (var i=0; i<sortedEvents.length; i++) {
+       for (var j=i+1; j<sortedEvents.length; j++) {
           if ((sortedEvents[i].time === sortedEvents[j].time) && (sortedEvents[i].se === sortedEvents[j].se)) {
-             console.log(sortedEvents[i], sortedEvents[j]);
              sortedEvents[i] = this.counter(sortedEvents[i], sortedEvents[j], true);
-             console.log("merged");
              sortedEvents.splice(j, 1);
              j--;
-             console.log(sortedEvents[i], sortedEvents[j]);
           }
           else break;
        }
@@ -68,25 +73,25 @@ module.exports = class ItemCounter {
     return;
   }
 
-  accumulateItem() {
+  // accumulate those sortedEvents
+  accumulateEvents() {
     var accumulated = [],
         curSum = {},
         sortedEvents = this._ride;
-    for (let i=0; i<sortedEvents.length; i++) {
-       // console.log("before", curSum);
+    for (var i=0; i<sortedEvents.length; i++) {
        curSum.item = clone(this.counter(curSum, sortedEvents[i], sortedEvents[i]["se"], "item")).item;
        curSum.time = sortedEvents[i].time;
-       // console.log("each", curSum);
        accumulated.push(clone(curSum));
     }
     this._ride =  accumulated;
     return;
   }
 
+  // print and store sortedEvents.  Before that, delete item keys having zero value.
   print_items() {
     var result = this._ride;
-    for (let i=1; i<result.length; i++) {
-        for (let key in result[i-1].item) {
+    for (var i=1; i<result.length; i++) {
+        for (var key in result[i-1].item) {
           if (result[i-1].item[key] === 0) delete result[i-1].item[key];
         }
         var str = "";
@@ -103,9 +108,10 @@ module.exports = class ItemCounter {
     return;
   }
 
+  // merge duplicate events, accumulate events, and print
   print_items_per_interval() {
     this.mergeEvents();
-    this.accumulateItem();
+    this.accumulateEvents();
     this.print_items();
     return;
   }
