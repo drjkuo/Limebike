@@ -50,6 +50,10 @@ ic.process_ride(ride);
 ic.print_items_per_interval();
 ```
 
+
+
 ## Testing
+
+`npm install -g mocha`
 
 run `mocha`
