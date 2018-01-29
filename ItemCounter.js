@@ -57,7 +57,7 @@ module.exports = class ItemCounter {
     return clone(i);
   }
 
-  // merge duplicate events that include the same time and se property, for example, two start event at the same time, and three end events at the same time
+  // merge duplicate events that include the same time and se property, for example, two start events at the same time, and three end events at the same time
   mergeEvents() {
     var sortedEvents = this._ride;
     for (var i=0; i<sortedEvents.length; i++) {
@@ -87,7 +87,7 @@ module.exports = class ItemCounter {
     return;
   }
 
-  // print and store sortedEvents.  Before that, delete item keys having zero value.
+  // print and store those sortedEvents.  Before that, delete item keys having zero value.
   print_items() {
     var result = this._ride;
     for (var i=1; i<result.length; i++) {
