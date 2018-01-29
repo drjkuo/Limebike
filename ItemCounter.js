@@ -34,7 +34,7 @@ module.exports = class ItemCounter {
         });
         sortedEvents.push(tmp);
      }
-     sortedEvents = sortedEvents.sort(function (x,y) {
+     sortedEvents.sort(function (x,y) {
         if (x.time > y.time) return 1;
         else if (x.time === y.time && x.se === false && y.se === true) return 1;
         else return -1;
