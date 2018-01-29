@@ -15,40 +15,8 @@
 
 run `node index.js`
 
-```javascript
+![alt](https://github.com/drjkuo/Limebike/blob/master/index.png)
 
-var ItemCounter = require('./ItemCounter');
-
-var ride = [
-   {
-      time: [new Date('2018-01-28 07:00'), new Date('2018-01-28 07:30')],
-      item: {
-         apple: 2,
-         brownie: 1
-      }
-   },
-   {
-      time: [new Date('2018-01-28 07:10'), new Date('2018-01-28 08:00')],
-      item: {
-         apple: 1,
-         carrot: 3
-      }
-   },
-
-   {
-      time: [new Date('2018-01-28 07:20'), new Date('2018-01-28 07:45')],
-      item: {
-         apple: 1,
-         brownie: 2,
-         diamond: 4
-      }
-   }
-];
-
-var ic = new ItemCounter();
-ic.process_ride(ride);
-ic.print_items_per_interval();
-```
 
 
 
@@ -57,3 +25,5 @@ ic.print_items_per_interval();
 `npm install -g mocha`
 
 run `mocha`
+
+![alt](https://github.com/drjkuo/Limebike/blob/master/test.png)
